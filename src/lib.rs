@@ -146,6 +146,7 @@ pub struct newtColors {
     pub selListboxFg: *mut ::std::os::raw::c_char,
     pub selListboxBg: *mut ::std::os::raw::c_char,
 }
+#[cfg(all(unix, target_pointer_width = "64"))]
 #[test]
 fn bindgen_test_layout_newtColors() {
     assert_eq!(
@@ -599,6 +600,460 @@ fn bindgen_test_layout_newtColors() {
         )
     );
 }
+#[cfg(all(unix, target_pointer_width = "32"))]
+#[test]
+fn bindgen_test_layout_newtColors() {
+    assert_eq!(
+        ::std::mem::size_of::<newtColors>(),
+        176usize,
+        concat!("Size of: ", stringify!(newtColors))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<newtColors>(),
+        4usize,
+        concat!("Alignment of ", stringify!(newtColors))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).rootFg as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(rootFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).rootBg as *const _ as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(rootBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).borderFg as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(borderFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).borderBg as *const _ as usize },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(borderBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).windowFg as *const _ as usize },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(windowFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).windowBg as *const _ as usize },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(windowBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).shadowFg as *const _ as usize },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(shadowFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).shadowBg as *const _ as usize },
+        28usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(shadowBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).titleFg as *const _ as usize },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(titleFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).titleBg as *const _ as usize },
+        36usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(titleBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).buttonFg as *const _ as usize },
+        40usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(buttonFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).buttonBg as *const _ as usize },
+        44usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(buttonBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actButtonFg as *const _ as usize },
+        48usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actButtonFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actButtonBg as *const _ as usize },
+        52usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actButtonBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).checkboxFg as *const _ as usize },
+        56usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(checkboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).checkboxBg as *const _ as usize },
+        60usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(checkboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actCheckboxFg as *const _ as usize },
+        64usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actCheckboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actCheckboxBg as *const _ as usize },
+        68usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actCheckboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).entryFg as *const _ as usize },
+        72usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(entryFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).entryBg as *const _ as usize },
+        76usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(entryBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).labelFg as *const _ as usize },
+        80usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(labelFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).labelBg as *const _ as usize },
+        84usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(labelBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).listboxFg as *const _ as usize },
+        88usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(listboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).listboxBg as *const _ as usize },
+        92usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(listboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actListboxFg as *const _ as usize },
+        96usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actListboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actListboxBg as *const _ as usize },
+        100usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actListboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).textboxFg as *const _ as usize },
+        104usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(textboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).textboxBg as *const _ as usize },
+        108usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(textboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actTextboxFg as *const _ as usize },
+        112usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actTextboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actTextboxBg as *const _ as usize },
+        116usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actTextboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).helpLineFg as *const _ as usize },
+        120usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(helpLineFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).helpLineBg as *const _ as usize },
+        124usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(helpLineBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).rootTextFg as *const _ as usize },
+        128usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(rootTextFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).rootTextBg as *const _ as usize },
+        132usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(rootTextBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).emptyScale as *const _ as usize },
+        136usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(emptyScale)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).fullScale as *const _ as usize },
+        140usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(fullScale)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).disabledEntryFg as *const _ as usize },
+        144usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(disabledEntryFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).disabledEntryBg as *const _ as usize },
+        148usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(disabledEntryBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).compactButtonFg as *const _ as usize },
+        152usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(compactButtonFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).compactButtonBg as *const _ as usize },
+        156usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(compactButtonBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actSelListboxFg as *const _ as usize },
+        160usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actSelListboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).actSelListboxBg as *const _ as usize },
+        164usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(actSelListboxBg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).selListboxFg as *const _ as usize },
+        168usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(selListboxFg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtColors>())).selListboxBg as *const _ as usize },
+        172usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtColors),
+            "::",
+            stringify!(selListboxBg)
+        )
+    );
+}
 pub const newtFlagsSense_NEWT_FLAGS_SET: newtFlagsSense = 0;
 pub const newtFlagsSense_NEWT_FLAGS_RESET: newtFlagsSense = 1;
 pub const newtFlagsSense_NEWT_FLAGS_TOGGLE: newtFlagsSense = 2;
@@ -1029,8 +1484,11 @@ pub const newtExitStruct_NEWT_EXIT_FDREADY: newtExitStruct__bindgen_ty_1 = 2;
 pub const newtExitStruct_NEWT_EXIT_TIMER: newtExitStruct__bindgen_ty_1 = 3;
 pub const newtExitStruct_NEWT_EXIT_ERROR: newtExitStruct__bindgen_ty_1 = 4;
 pub type newtExitStruct__bindgen_ty_1 = u32;
+#[cfg(all(unix, target_pointer_width = "64"))]
 #[repr(C)]
-#[derive(Copy, Clone)]pub union newtExitStruct__bindgen_ty_2 { pub watch : :: std :: os :: raw :: c_int , pub key : :: std :: os :: raw :: c_int , pub co : newtComponent , _bindgen_union_align : u64 , }#[test]
+#[derive(Copy, Clone)]pub union newtExitStruct__bindgen_ty_2 { pub watch : :: std :: os :: raw :: c_int , pub key : :: std :: os :: raw :: c_int , pub co : newtComponent , _bindgen_union_align : u64 , }
+#[cfg(all(unix, target_pointer_width = "64"))]
+#[test]
 fn bindgen_test_layout_newtExitStruct__bindgen_ty_2() {
     assert_eq!(
         ::std::mem::size_of::<newtExitStruct__bindgen_ty_2>(),
@@ -1073,6 +1531,54 @@ fn bindgen_test_layout_newtExitStruct__bindgen_ty_2() {
         )
     );
 }
+#[cfg(all(unix, target_pointer_width = "32"))]
+#[repr(C)]
+#[derive(Copy, Clone)]pub union newtExitStruct__bindgen_ty_2 { pub watch : :: std :: os :: raw :: c_int , pub key : :: std :: os :: raw :: c_int , pub co : newtComponent , _bindgen_union_align : u32 , }
+#[cfg(all(unix, target_pointer_width = "32"))]
+#[test]
+fn bindgen_test_layout_newtExitStruct__bindgen_ty_2() {
+    assert_eq!(
+        ::std::mem::size_of::<newtExitStruct__bindgen_ty_2>(),
+        4usize,
+        concat!("Size of: ", stringify!(newtExitStruct__bindgen_ty_2))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<newtExitStruct__bindgen_ty_2>(),
+        4usize,
+        concat!("Alignment of ", stringify!(newtExitStruct__bindgen_ty_2))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtExitStruct__bindgen_ty_2>())).watch as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtExitStruct__bindgen_ty_2),
+            "::",
+            stringify!(watch)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtExitStruct__bindgen_ty_2>())).key as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtExitStruct__bindgen_ty_2),
+            "::",
+            stringify!(key)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtExitStruct__bindgen_ty_2>())).co as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtExitStruct__bindgen_ty_2),
+            "::",
+            stringify!(co)
+        )
+    );
+}
+#[cfg(all(unix, target_pointer_width = "64"))]
 #[test]
 fn bindgen_test_layout_newtExitStruct() {
     assert_eq!(
@@ -1098,6 +1604,40 @@ fn bindgen_test_layout_newtExitStruct() {
     assert_eq!(
         unsafe { &(*(::std::ptr::null::<newtExitStruct>())).u as *const _ as usize },
         8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtExitStruct),
+            "::",
+            stringify!(u)
+        )
+    );
+}
+#[cfg(all(unix, target_pointer_width = "32"))]
+#[test]
+fn bindgen_test_layout_newtExitStruct() {
+    assert_eq!(
+        ::std::mem::size_of::<newtExitStruct>(),
+        8usize,
+        concat!("Size of: ", stringify!(newtExitStruct))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<newtExitStruct>(),
+        4usize,
+        concat!("Alignment of ", stringify!(newtExitStruct))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtExitStruct>())).reason as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtExitStruct),
+            "::",
+            stringify!(reason)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtExitStruct>())).u as *const _ as usize },
+        4usize,
         concat!(
             "Offset of field: ",
             stringify!(newtExitStruct),
@@ -1380,7 +1920,7 @@ extern "C" {
     pub fn newtButtonBarv(
         button1: *mut ::std::os::raw::c_char,
         b1comp: *mut newtComponent,
-        args: *mut __va_list_tag,
+        args: va_list,
     ) -> newtGrid;
 }
 extern "C" {
@@ -1403,7 +1943,7 @@ extern "C" {
         title: *mut ::std::os::raw::c_char,
         buttonText: *mut ::std::os::raw::c_char,
         text: *mut ::std::os::raw::c_char,
-        argv: *mut __va_list_tag,
+        argv: va_list,
     );
 }
 extern "C" {
@@ -1446,6 +1986,7 @@ pub struct newtWinEntry {
     pub value: *mut *mut ::std::os::raw::c_char,
     pub flags: ::std::os::raw::c_int,
 }
+#[cfg(all(unix, target_pointer_width = "64"))]
 #[test]
 fn bindgen_test_layout_newtWinEntry() {
     assert_eq!(
@@ -1489,6 +2030,50 @@ fn bindgen_test_layout_newtWinEntry() {
         )
     );
 }
+#[cfg(all(unix, target_pointer_width = "32"))]
+#[test]
+fn bindgen_test_layout_newtWinEntry() {
+    assert_eq!(
+        ::std::mem::size_of::<newtWinEntry>(),
+        12usize,
+        concat!("Size of: ", stringify!(newtWinEntry))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<newtWinEntry>(),
+        4usize,
+        concat!("Alignment of ", stringify!(newtWinEntry))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtWinEntry>())).text as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtWinEntry),
+            "::",
+            stringify!(text)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtWinEntry>())).value as *const _ as usize },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtWinEntry),
+            "::",
+            stringify!(value)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<newtWinEntry>())).flags as *const _ as usize },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(newtWinEntry),
+            "::",
+            stringify!(flags)
+        )
+    );
+}
 extern "C" {
     pub fn newtWinEntries(
         title: *mut ::std::os::raw::c_char,
@@ -1502,7 +2087,11 @@ extern "C" {
         ...
     ) -> ::std::os::raw::c_int;
 }
+#[cfg(all(unix, target_pointer_width = "64"))]
 pub type __builtin_va_list = [__va_list_tag; 1usize];
+#[cfg(all(unix, target_pointer_width = "32"))]
+pub type __builtin_va_list = *mut ::std::os::raw::c_char;
+#[cfg(all(unix, target_pointer_width = "64"))]
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __va_list_tag {
@@ -1511,6 +2100,7 @@ pub struct __va_list_tag {
     pub overflow_arg_area: *mut ::std::os::raw::c_void,
     pub reg_save_area: *mut ::std::os::raw::c_void,
 }
+#[cfg(all(unix, target_pointer_width = "64"))]
 #[test]
 fn bindgen_test_layout___va_list_tag() {
     assert_eq!(
