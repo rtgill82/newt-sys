@@ -2,10 +2,6 @@
 
 _Low-level bindings for the Newt console UI library_
 
-Currently just a placeholder for when I'm ready to separate the low-level
-bindings from the higher-level [newt](https://crates.io/crates/newt) library.
-
-
 ## LICENSE
 
 Copyright (C) 2018  Robert Gill

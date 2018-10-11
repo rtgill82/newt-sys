@@ -1,9 +1,12 @@
 [package]
 name = "newt-sys"
-version = "0.0.0"
+version = "0.1.0"
 authors = ["Robert Gill <locke@sdf.lonestar.org>"]
 description = "Low-level bindings for the Newt console UI library"
+repository = "https://github.com/xelkarin/newt-sys"
 license = "LGPL-2.0-only"
+categories = ["external-ffi-bindings", "os::unix-apis"]
+keywords = ["bindings", "ffi", "tui"]
 readme = "README.md"
 
 links = "newt"
