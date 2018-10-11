@@ -19,6 +19,12 @@ struct BuildConfig<'a> {
 
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
+    let mut make = "gmake";
+
+    if let Err(_e) = Command::new(make).spawn() {
+        make = "make"
+    }
+
     Command::new("tar").args(&["xzf", archive])
         .args(&["-C", cfg.build_prefix])
         .status().unwrap();
@@ -29,9 +35,9 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("--disable-nls")
         .status().unwrap();
 
-    Command::new("gmake")
+    Command::new(make)
         .status().unwrap();
-    Command::new("gmake")
+    Command::new(make)
         .arg("install")
         .status().unwrap();
 
