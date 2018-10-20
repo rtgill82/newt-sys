@@ -1,13 +1,17 @@
 extern crate pkg_config;
+extern crate regex;
 use pkg_config::Library;
+use regex::Regex;
 use std::path::Path;
-use std::process::Command;
+use std::process::{Command,Stdio};
 use std::env;
 use std::fs;
 
 const NEWT_VERSION:     &str = "0.52.20";
 const POPT_VERSION:     &str = "1.16";
 const SLANG_VERSION:    &str = "2.3.2";
+
+static mut MAKE: &str = "make";
 
 struct BuildConfig<'a> {
     build_prefix: &'a str,
@@ -17,13 +21,38 @@ struct BuildConfig<'a> {
     pkg_config_path: &'a str
 }
 
+fn make() -> &'static str {
+    unsafe { MAKE }
+}
+
+fn find_gnu_make() {
+    for make in ["make", "gmake"].iter() {
+        if check_make(make) {
+            unsafe { MAKE = make; }
+            return;
+        }
+    }
+    panic!("GNU Make is required for building this package.");
+}
+
+fn check_make(make: &str) -> bool {
+    let cmd = Command::new(make)
+        .stdin(Stdio::null())
+        .args(&["-f", "-", "--version"])
+        .output();
+
+    match cmd {
+        Ok(output) => {
+            let re = Regex::new(r"\AGNU Make").unwrap();
+            let s = String::from_utf8_lossy(output.stdout.as_slice());
+            re.is_match(&s)
+        },
+        Err(_e) => false
+    }
+}
+
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
-    let mut make = "gmake";
-
-    if let Err(_e) = Command::new(make).spawn() {
-        make = "make"
-    }
 
     Command::new("tar").args(&["xzf", archive])
         .args(&["-C", cfg.build_prefix])
@@ -35,9 +64,9 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("--disable-nls")
         .status().unwrap();
 
-    Command::new(make)
+    Command::new(make())
         .status().unwrap();
-    Command::new(make)
+    Command::new(make())
         .arg("install")
         .status().unwrap();
 
@@ -61,8 +90,8 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("--disable-rpath")
         .status().unwrap();
 
-    Command::new("make").status().unwrap();
-    Command::new("make").arg("install").status().unwrap();
+    Command::new(make()).status().unwrap();
+    Command::new(make()).arg("install").status().unwrap();
 
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
     pkg_config::Config::new()
@@ -83,10 +112,10 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .args(&["--prefix", cfg.install_prefix])
         .status().unwrap();
 
-    Command::new("make")
+    Command::new(make())
         .arg("CFLAGS=-g -O2 -fPIC")
         .status().unwrap();
-    Command::new("make")
+    Command::new(make())
         .arg("CFLAGS=-g -O2 -fPIC")
         .arg("install-static").status().unwrap();
 
@@ -174,6 +203,7 @@ fn build_libs() {
 }
 
 fn main() {
+    find_gnu_make();
     let result = pkg_config::Config::new()
         .atleast_version(NEWT_VERSION)
         .probe("libnewt");
