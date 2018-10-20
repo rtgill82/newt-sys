@@ -159,8 +159,8 @@ fn unset_env_libs() {
     env::remove_var("LDFLAGS");
 }
 
-fn build(package: &str, version: &str, out_dir: &str, libs: Option<&[Box<Library>]>)
-        -> Library {
+fn build(package: &str, version: &str, out_dir: &str,
+         libs: Option<&[Box<Library>]>) -> Library {
     let crate_path = env::var("CARGO_MANIFEST_DIR").unwrap();
     let version_name = &format!("{}-{}", package, version);
     let build_prefix = &format!("{}/build", out_dir);
@@ -182,7 +182,7 @@ fn build(package: &str, version: &str, out_dir: &str, libs: Option<&[Box<Library
         "newt" => build_newt(version, &build_cfg),
         "popt" => build_popt(version, &build_cfg),
         "slang" => build_slang(version, &build_cfg),
-        _ => panic!("")
+        _ => panic!("Unexpected package requested to be built: {}", package)
     };
     env::set_current_dir(&old_dir).unwrap();
     unset_env_libs();
