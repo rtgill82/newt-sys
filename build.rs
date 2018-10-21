@@ -21,21 +21,6 @@ struct BuildConfig<'a> {
     pkg_config_path: &'a str
 }
 
-#[inline]
-fn make() -> &'static str {
-    unsafe { MAKE }
-}
-
-fn find_gnu_make() {
-    for make in ["make", "gmake"].iter() {
-        if check_make(make) {
-            unsafe { MAKE = make; }
-            return;
-        }
-    }
-    panic!("GNU Make is required for building this package.");
-}
-
 fn check_make(make: &str) -> bool {
     let cmd = Command::new(make)
         .stdin(Stdio::null())
@@ -123,6 +108,21 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .arg("--cflags")
         .statik(true)
         .probe("slang").unwrap()
+}
+
+#[inline]
+fn make() -> &'static str {
+    unsafe { MAKE }
+}
+
+fn find_gnu_make() {
+    for make in ["make", "gmake"].iter() {
+        if check_make(make) {
+            unsafe { MAKE = make; }
+            return;
+        }
+    }
+    panic!("GNU Make is required for building this package.");
 }
 
 fn export_env_libs(libs: &[Box<Library>]) {
