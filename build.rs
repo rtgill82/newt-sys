@@ -21,6 +21,7 @@ struct BuildConfig<'a> {
     pkg_config_path: &'a str
 }
 
+#[inline]
 fn make() -> &'static str {
     unsafe { MAKE }
 }
