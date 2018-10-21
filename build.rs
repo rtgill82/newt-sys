@@ -65,8 +65,6 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .status().unwrap();
 
     Command::new(make())
-        .status().unwrap();
-    Command::new(make())
         .arg("install")
         .status().unwrap();
 
@@ -90,8 +88,9 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("--disable-rpath")
         .status().unwrap();
 
-    Command::new(make()).status().unwrap();
-    Command::new(make()).arg("install").status().unwrap();
+    Command::new(make())
+        .arg("install")
+        .status().unwrap();
 
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
     pkg_config::Config::new()
@@ -114,10 +113,8 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
 
     Command::new(make())
         .arg("CFLAGS=-g -O2 -fPIC")
+        .arg("install-static")
         .status().unwrap();
-    Command::new(make())
-        .arg("CFLAGS=-g -O2 -fPIC")
-        .arg("install-static").status().unwrap();
 
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
     pkg_config::Config::new()
