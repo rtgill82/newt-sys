@@ -203,12 +203,15 @@ fn build_libs() {
 }
 
 fn main() {
-    find_gnu_make();
+    let statik = cfg!(feature = "static") ||
+                 env::var("NEWT_STATIC").is_ok();
+
     let result = pkg_config::Config::new()
         .atleast_version(NEWT_VERSION)
         .probe("libnewt");
 
-    if result.is_err() {
+    if statik || result.is_err() {
+        find_gnu_make();
         build_libs()
     };
 }
