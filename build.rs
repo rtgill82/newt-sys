@@ -21,22 +21,6 @@ struct BuildConfig<'a> {
     pkg_config_path: &'a str
 }
 
-fn check_make(make: &str) -> bool {
-    let cmd = Command::new(make)
-        .stdin(Stdio::null())
-        .args(&["-f", "-", "--version"])
-        .output();
-
-    match cmd {
-        Ok(output) => {
-            let re = Regex::new(r"\AGNU Make").unwrap();
-            let s = String::from_utf8_lossy(output.stdout.as_slice());
-            re.is_match(&s)
-        },
-        Err(_e) => false
-    }
-}
-
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
 
@@ -123,6 +107,22 @@ fn find_gnu_make() {
         }
     }
     panic!("GNU Make is required for building this package.");
+}
+
+fn check_make(make: &str) -> bool {
+    let cmd = Command::new(make)
+        .stdin(Stdio::null())
+        .args(&["-f", "-", "--version"])
+        .output();
+
+    match cmd {
+        Ok(output) => {
+            let re = Regex::new(r"\AGNU Make").unwrap();
+            let s = String::from_utf8_lossy(output.stdout.as_slice());
+            re.is_match(&s)
+        },
+        Err(_e) => false
+    }
 }
 
 fn export_env_libs(libs: &[Box<Library>]) {
