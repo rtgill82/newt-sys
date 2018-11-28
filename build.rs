@@ -1,17 +1,22 @@
+extern crate lazy_static;
 extern crate pkg_config;
 extern crate regex;
+
+use lazy_static::lazy_static;
 use pkg_config::Library;
 use regex::Regex;
+
+use std::{env, fs};
 use std::path::Path;
 use std::process::{Command,Stdio};
-use std::env;
-use std::fs;
 
 const NEWT_VERSION:     &str = "0.52.20";
 const POPT_VERSION:     &str = "1.16";
 const SLANG_VERSION:    &str = "2.3.2";
 
-static mut MAKE: &str = "make";
+lazy_static! {
+    static ref MAKE: &'static str = find_gnu_make();
+}
 
 struct BuildConfig<'a> {
     build_prefix: &'a str,
@@ -19,6 +24,31 @@ struct BuildConfig<'a> {
     src_dir: &'a str,
     install_prefix: &'a str,
     pkg_config_path: &'a str
+}
+
+fn check_make(make: &str) -> bool {
+    let cmd = Command::new(make)
+        .stdin(Stdio::null())
+        .args(&["-f", "-", "--version"])
+        .output();
+
+    match cmd {
+        Ok(output) => {
+            let re = Regex::new(r"\AGNU Make").unwrap();
+            let s = String::from_utf8_lossy(output.stdout.as_slice());
+            re.is_match(&s)
+        },
+        Err(_e) => false
+    }
+}
+
+fn find_gnu_make() -> &'static str {
+    for make in ["make", "gmake"].iter() {
+        if check_make(make) {
+            return make;
+        }
+    }
+    panic!("GNU Make is required for building this package.");
 }
 
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
@@ -96,33 +126,7 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
 
 #[inline]
 fn make() -> &'static str {
-    unsafe { MAKE }
-}
-
-fn find_gnu_make() {
-    for make in ["make", "gmake"].iter() {
-        if check_make(make) {
-            unsafe { MAKE = make; }
-            return;
-        }
-    }
-    panic!("GNU Make is required for building this package.");
-}
-
-fn check_make(make: &str) -> bool {
-    let cmd = Command::new(make)
-        .stdin(Stdio::null())
-        .args(&["-f", "-", "--version"])
-        .output();
-
-    match cmd {
-        Ok(output) => {
-            let re = Regex::new(r"\AGNU Make").unwrap();
-            let s = String::from_utf8_lossy(output.stdout.as_slice());
-            re.is_match(&s)
-        },
-        Err(_e) => false
-    }
+    &MAKE
 }
 
 fn export_env_libs(libs: &[Box<Library>]) {
