@@ -10,7 +10,7 @@ use std::{env, fs};
 use std::path::Path;
 use std::process::{Command,Stdio};
 
-const NEWT_VERSION:     &str = "0.52.20";
+const NEWT_VERSION:     &str = "0.52.21";
 const POPT_VERSION:     &str = "1.16";
 const SLANG_VERSION:    &str = "2.3.2";
 
