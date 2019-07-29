@@ -10,9 +10,11 @@ use std::{env, fs};
 use std::path::Path;
 use std::process::{Command,Stdio};
 
-const NEWT_VERSION:     &str = "0.52.21";
-const POPT_VERSION:     &str = "1.16";
-const SLANG_VERSION:    &str = "2.3.2";
+const NEWT_VERSION:   &str = "0.52.21";
+const POPT_VERSION:   &str = "1.16";
+const SLANG_VERSION:  &str = "2.3.2";
+
+const OLD_CFLAGS_ENV: &str = "_OLD_CFLAGS";
 
 lazy_static! {
     static ref MAKE: &'static str = find_gnu_make();
@@ -102,6 +104,8 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
 
 fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.bz2", cfg.archive_name);
+
+    cflags_set_fpic();
     Command::new("tar").args(&["xjf", archive])
         .args(&["-C", cfg.build_prefix])
         .status().unwrap();
@@ -112,10 +116,10 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .status().unwrap();
 
     Command::new(make())
-        .arg("CFLAGS=-g -O2 -fPIC")
         .arg("install-static")
         .status().unwrap();
 
+    cflags_restore();
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
@@ -159,6 +163,26 @@ fn export_env_libs(libs: &[Box<Library>]) {
 fn unset_env_libs() {
     env::remove_var("CPPFLAGS");
     env::remove_var("LDFLAGS");
+}
+
+fn cflags_set_fpic() {
+    let mut cflags = match env::var("CFLAGS") {
+        Ok(val) => val,
+        Err(_)  => String::new()
+    };
+
+    if !cflags.contains("-fPIC") {
+        env::set_var(OLD_CFLAGS_ENV, &cflags);
+        cflags.push_str(" -fPIC");
+        env::set_var("CFLAGS", &cflags);
+    }
+}
+
+fn cflags_restore() {
+    if let Ok(old_cflags) = env::var(OLD_CFLAGS_ENV) {
+        env::set_var("CFLAGS", &old_cflags);
+        env::remove_var(OLD_CFLAGS_ENV);
+    }
 }
 
 fn build(package: &str, version: &str, out_dir: &str,
