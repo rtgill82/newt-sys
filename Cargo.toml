@@ -1,6 +1,6 @@
 [package]
 name = "newt-sys"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Robert Gill <locke@sdf.lonestar.org>"]
 description = "Low-level bindings for the Newt console UI library"
 repository = "https://github.com/xelkarin/newt-sys"
