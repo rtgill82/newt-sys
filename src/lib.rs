@@ -3,6 +3,9 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 
+mod colorset_custom;
+pub use self::colorset_custom::NEWT_COLORSET_CUSTOM;
+
 pub const __GNUC_VA_LIST: u32 = 1;
 pub const NEWT_COLORSET_ROOT: i32 = 2;
 pub const NEWT_COLORSET_BORDER: i32 = 3;

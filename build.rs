@@ -215,7 +215,7 @@ fn build(package: &str, version: &str, out_dir: &str,
     return library;
 }
 
-fn build_libs() {
+fn build_libs() -> Library {
     let out_dir = env::var("OUT_DIR").unwrap();
     let mut libraries: Vec<Box<Library>> = Vec::new();
 
@@ -225,7 +225,16 @@ fn build_libs() {
     let library = Box::new(build("slang", SLANG_VERSION, &out_dir, None));
     libraries.push(library);
 
-    build("newt", NEWT_VERSION, &out_dir, Some(&libraries));
+    build("newt", NEWT_VERSION, &out_dir, Some(&libraries))
+}
+
+fn build_c(lib: &Library) {
+    let mut build = cc::Build::new();
+    build.file("src/colorset_custom.c");
+    for path in lib.include_paths.iter() {
+        build.include(path);
+    }
+    build.compile("libnewt-rs");
 }
 
 fn main() {
@@ -236,8 +245,12 @@ fn main() {
         .atleast_version(NEWT_VERSION)
         .probe("libnewt");
 
+    let lib: Library;
     if statik || result.is_err() {
         find_gnu_make();
-        build_libs()
-    };
+        lib = build_libs();
+    } else {
+        lib = result.unwrap();
+    }
+    build_c(&lib);
 }
