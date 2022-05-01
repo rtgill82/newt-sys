@@ -1,3 +1,3 @@
 [submodule "vendor"]
 	path = vendor
-	url = https://github.com/xelkarin/vendor-newt-sys.git
+	url = https://github.com/rtgill82/vendor-newt-sys.git

@@ -11,7 +11,7 @@ use std::path::Path;
 use std::process::{Command,Stdio};
 
 const NEWT_VERSION:   &str = "0.52.21";
-const POPT_VERSION:   &str = "1.16";
+const POPT_VERSION:   &str = "1.18";
 const SLANG_VERSION:  &str = "2.3.2";
 
 const OLD_CFLAGS_ENV: &str = "_OLD_CFLAGS";
