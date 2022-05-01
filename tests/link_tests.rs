@@ -46,10 +46,11 @@ fn checkbox_tree_entry_value_types() {
 
 fn add_item(tree: newtComponent, text: &str, data: i32, indexes: &[i32]) {
     unsafe {
-        let c_str = CString::new(text).unwrap().as_ptr();
+        let c_str = CString::new(text).unwrap();
+        let str_ptr = c_str.as_ptr();
         let c_data: *mut c_void = data as *mut c_void;
         let c_ary: *mut i32 = indexes.as_ptr() as *mut i32;
-        newtCheckboxTreeAddArray(tree, c_str, c_data, 0, c_ary);
+        newtCheckboxTreeAddArray(tree, str_ptr, c_data, 0, c_ary);
     }
 }
 
