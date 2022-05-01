@@ -58,48 +58,52 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
 
     Command::new("tar").args(&["xzf", archive])
         .args(&["-C", cfg.build_prefix])
-        .status().unwrap();
+        .status().expect("error running tar");
 
-    env::set_current_dir(&Path::new(cfg.src_dir)).unwrap();
+    env::set_current_dir(&Path::new(cfg.src_dir))
+        .expect("unable to change directory");
     Command::new("./configure")
         .args(&["--prefix", cfg.install_prefix])
         .arg("--disable-nls")
-        .status().unwrap();
+        .status().expect("error running configure");
 
     Command::new(make())
         .arg("install")
-        .status().unwrap();
+        .status().expect("error running make");
 
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .statik(true)
-        .probe("libnewt").unwrap()
+        .probe("libnewt")
+        .expect("error running pkg-config")
 }
 
 fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
     Command::new("tar").args(&["xzf", archive])
         .args(&["-C", cfg.build_prefix])
-        .status().unwrap();
+        .status().expect("error running tar");
 
-    env::set_current_dir(&Path::new(cfg.src_dir)).unwrap();
+    env::set_current_dir(&Path::new(cfg.src_dir))
+        .expect("unable to change directory");
     Command::new("./configure")
         .args(&["--prefix", cfg.install_prefix])
         .arg("--disable-nls")
         .arg("--disable-rpath")
-        .status().unwrap();
+        .status().expect("error running configure");
 
     Command::new(make())
         .arg("install")
-        .status().unwrap();
+        .status().expect("error running make");
 
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")
         .statik(true)
-        .probe("popt").unwrap()
+        .probe("popt")
+        .expect("error running pkg-config")
 }
 
 fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
@@ -108,16 +112,17 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
     cflags_set_fpic();
     Command::new("tar").args(&["xjf", archive])
         .args(&["-C", cfg.build_prefix])
-        .status().unwrap();
+        .status().expect("error running tar");
 
-    env::set_current_dir(&Path::new(cfg.src_dir)).unwrap();
+    env::set_current_dir(&Path::new(cfg.src_dir))
+        .expect("unable to change directory");
     Command::new("./configure")
         .args(&["--prefix", cfg.install_prefix])
-        .status().unwrap();
+        .status().expect("error running configure");
 
     Command::new(make())
         .arg("install-static")
-        .status().unwrap();
+        .status().expect("error running make");
 
     cflags_restore();
     env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
@@ -125,7 +130,8 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .atleast_version(version)
         .arg("--cflags")
         .statik(true)
-        .probe("slang").unwrap()
+        .probe("slang")
+        .expect("error running pkg-config")
 }
 
 #[inline]
@@ -201,16 +207,20 @@ fn build(package: &str, version: &str, out_dir: &str,
     };
 
     if let Some(libs) = libs { export_env_libs(&libs) }
-    let old_dir = env::current_dir().unwrap();
-    fs::create_dir_all(&Path::new(build_prefix)).unwrap();
-    env::set_current_dir(&Path::new(build_prefix)).unwrap();
+    let old_dir = env::current_dir()
+        .expect("unable to read current directory");
+    fs::create_dir_all(&Path::new(build_prefix))
+        .expect("unable to create build directory");
+    env::set_current_dir(&Path::new(build_prefix))
+        .expect("unable to change directory");
     let library = match package {
         "newt" => build_newt(version, &build_cfg),
         "popt" => build_popt(version, &build_cfg),
         "slang" => build_slang(version, &build_cfg),
         _ => panic!("Unexpected package requested to be built: {}", package)
     };
-    env::set_current_dir(&old_dir).unwrap();
+    env::set_current_dir(&old_dir)
+        .expect("unable to change directory");
     unset_env_libs();
     return library;
 }
