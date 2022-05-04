@@ -15,7 +15,7 @@ build = "build.rs"
 [build-dependencies]
 cc = "1.0"
 lazy_static = "1.0"
-pkg-config = "0.3.14"
+pkg-config = "0.3.25"
 regex = "1"
 
 [features]

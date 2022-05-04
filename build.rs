@@ -71,7 +71,7 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("install")
         .status().expect("error running make");
 
-    env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
+    env::set_var("PKG_CONFIG_PATH", cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .statik(true)
@@ -97,7 +97,7 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("install")
         .status().expect("error running make");
 
-    env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
+    env::set_var("PKG_CONFIG_PATH", cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")
@@ -125,7 +125,7 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .status().expect("error running make");
 
     cflags_restore();
-    env::set_var("PKG_CONFIG_LIBDIR", cfg.pkg_config_path);
+    env::set_var("PKG_CONFIG_PATH", cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")

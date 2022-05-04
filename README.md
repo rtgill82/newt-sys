@@ -4,7 +4,7 @@ _Low-level bindings for the Newt console UI library_
 
 ## LICENSE
 
-Copyright (C) 2018  Robert Gill
+Copyright (C) 2018  Robert Gill <<rtgill82@gmail.com>>
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
