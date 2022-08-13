@@ -65,6 +65,8 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
     Command::new("./configure")
         .args(&["--prefix", cfg.install_prefix])
         .arg("--disable-nls")
+        .arg("--without-python")
+        .arg("--without-tcl")
         .status().expect("error running configure");
 
     Command::new(make())
