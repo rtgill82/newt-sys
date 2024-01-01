@@ -10,9 +10,9 @@ use std::{env, fs};
 use std::path::Path;
 use std::process::{Command,Stdio};
 
-const NEWT_VERSION:   &str = "0.52.21";
-const POPT_VERSION:   &str = "1.18";
-const SLANG_VERSION:  &str = "2.3.2";
+const NEWT_VERSION:   &str = "0.52.24";
+const POPT_VERSION:   &str = "1.19";
+const SLANG_VERSION:  &str = "2.3.3";
 
 const OLD_CFLAGS_ENV: &str = "_OLD_CFLAGS";
 
@@ -53,6 +53,15 @@ fn find_gnu_make() -> &'static str {
     panic!("GNU Make is required for building this package.");
 }
 
+fn append_pkg_config_path(path: &str) {
+    if let Ok(pkg_config_path) = env::var("PKG_CONFIG_PATH") {
+        let new_path = format!("{}:{}", pkg_config_path, path);
+        env::set_var("PKG_CONFIG_PATH", new_path);
+    } else {
+        env::set_var("PKG_CONFIG_PATH", path);
+    }
+}
+
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
 
@@ -73,7 +82,7 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("install")
         .status().expect("error running make");
 
-    env::set_var("PKG_CONFIG_PATH", cfg.pkg_config_path);
+    append_pkg_config_path(cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .statik(true)
@@ -99,7 +108,7 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("install")
         .status().expect("error running make");
 
-    env::set_var("PKG_CONFIG_PATH", cfg.pkg_config_path);
+    append_pkg_config_path(cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")
@@ -127,7 +136,7 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .status().expect("error running make");
 
     cflags_restore();
-    env::set_var("PKG_CONFIG_PATH", cfg.pkg_config_path);
+    append_pkg_config_path(cfg.pkg_config_path);
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")
