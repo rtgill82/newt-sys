@@ -8,6 +8,7 @@ license = "LGPL-2.0-only"
 categories = ["external-ffi-bindings", "os::unix-apis"]
 keywords = ["bindings", "ffi", "tui"]
 readme = "README.md"
+edition = "2018"
 
 links = "newt"
 build = "build.rs"
