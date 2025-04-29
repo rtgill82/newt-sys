@@ -31,7 +31,7 @@ struct BuildConfig<'a> {
 fn check_make(make: &str) -> bool {
     let cmd = Command::new(make)
         .stdin(Stdio::null())
-        .args(&["-f", "-", "--version"])
+        .args(["-f", "-", "--version"])
         .output();
 
     match cmd {
@@ -65,14 +65,14 @@ fn append_pkg_config_path(path: &str) {
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
 
-    Command::new("tar").args(&["xzf", archive])
-        .args(&["-C", cfg.build_prefix])
+    Command::new("tar").args(["xzf", archive])
+        .args(["-C", cfg.build_prefix])
         .status().expect("error running tar");
 
-    env::set_current_dir(&Path::new(cfg.src_dir))
+    env::set_current_dir(Path::new(cfg.src_dir))
         .expect("unable to change directory");
     Command::new("./configure")
-        .args(&["--prefix", cfg.install_prefix])
+        .args(["--prefix", cfg.install_prefix])
         .arg("--disable-nls")
         .arg("--without-python")
         .arg("--without-tcl")
@@ -92,14 +92,14 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
 
 fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.gz", cfg.archive_name);
-    Command::new("tar").args(&["xzf", archive])
-        .args(&["-C", cfg.build_prefix])
+    Command::new("tar").args(["xzf", archive])
+        .args(["-C", cfg.build_prefix])
         .status().expect("error running tar");
 
-    env::set_current_dir(&Path::new(cfg.src_dir))
+    env::set_current_dir(Path::new(cfg.src_dir))
         .expect("unable to change directory");
     Command::new("./configure")
-        .args(&["--prefix", cfg.install_prefix])
+        .args(["--prefix", cfg.install_prefix])
         .arg("--disable-nls")
         .arg("--disable-rpath")
         .status().expect("error running configure");
@@ -121,14 +121,14 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
     let archive = &format!("{}.tar.bz2", cfg.archive_name);
 
     cflags_set_fpic();
-    Command::new("tar").args(&["xjf", archive])
-        .args(&["-C", cfg.build_prefix])
+    Command::new("tar").args(["xjf", archive])
+        .args(["-C", cfg.build_prefix])
         .status().expect("error running tar");
 
-    env::set_current_dir(&Path::new(cfg.src_dir))
+    env::set_current_dir(Path::new(cfg.src_dir))
         .expect("unable to change directory");
     Command::new("./configure")
-        .args(&["--prefix", cfg.install_prefix])
+        .args(["--prefix", cfg.install_prefix])
         .status().expect("error running configure");
 
     Command::new(make())
@@ -168,11 +168,11 @@ fn export_env_libs(libs: &[Box<Library>]) {
         }
     }
 
-    if include_paths.len() > 0 {
+    if !include_paths.is_empty() {
         env::set_var("CPPFLAGS", include_paths)
     }
 
-    if link_paths.len() > 0 {
+    if !link_paths.is_empty() {
         env::set_var("LDFLAGS", link_paths)
     }
 }
@@ -183,11 +183,7 @@ fn unset_env_libs() {
 }
 
 fn cflags_set_fpic() {
-    let mut cflags = match env::var("CFLAGS") {
-        Ok(val) => val,
-        Err(_)  => String::new()
-    };
-
+    let mut cflags = env::var("CFLAGS").unwrap_or_default();
     if !cflags.contains("-fPIC") {
         env::set_var(OLD_CFLAGS_ENV, &cflags);
         cflags.push_str(" -fPIC");
@@ -210,19 +206,19 @@ fn build(package: &str, version: &str, out_dir: &str,
     let install_prefix = &format!("{}/install/{}", out_dir, version_name);
 
     let build_cfg = BuildConfig {
-        build_prefix: &build_prefix,
+        build_prefix,
         archive_name: &format!("{}/vendor/{}", crate_path, version_name),
         src_dir: &format!("{}/{}", build_prefix, version_name),
-        install_prefix: &install_prefix,
+        install_prefix,
         pkg_config_path: &format!("{}/lib/pkgconfig", install_prefix)
     };
 
-    if let Some(libs) = libs { export_env_libs(&libs) }
+    if let Some(libs) = libs { export_env_libs(libs) }
     let old_dir = env::current_dir()
         .expect("unable to read current directory");
-    fs::create_dir_all(&Path::new(build_prefix))
+    fs::create_dir_all(Path::new(build_prefix))
         .expect("unable to create build directory");
-    env::set_current_dir(&Path::new(build_prefix))
+    env::set_current_dir(Path::new(build_prefix))
         .expect("unable to change directory");
     let library = match package {
         "newt" => build_newt(version, &build_cfg),
@@ -233,7 +229,7 @@ fn build(package: &str, version: &str, out_dir: &str,
     env::set_current_dir(&old_dir)
         .expect("unable to change directory");
     unset_env_libs();
-    return library;
+    library
 }
 
 fn build_libs() -> Library {
@@ -266,12 +262,11 @@ fn main() {
         .atleast_version(NEWT_VERSION)
         .probe("libnewt");
 
-    let lib: Library;
-    if statik || result.is_err() {
+    let lib: Library = if statik || result.is_err() {
         find_gnu_make();
-        lib = build_libs();
+        build_libs()
     } else {
-        lib = result.unwrap();
-    }
+        result.unwrap()
+    };
     build_c(&lib);
 }
