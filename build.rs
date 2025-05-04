@@ -7,7 +7,7 @@ use pkg_config::Library;
 use regex::Regex;
 
 use std::{env, fs};
-use std::path::Path;
+use std::path::{Path,PathBuf};
 use std::process::{Command,Stdio};
 
 const NEWT_VERSION:   &str = "0.52.25";
@@ -21,11 +21,17 @@ lazy_static! {
 }
 
 struct BuildConfig<'a> {
+    target: String,
     build_prefix: &'a str,
     archive_name: &'a str,
     src_dir: &'a str,
     install_prefix: &'a str,
     pkg_config_path: &'a str
+}
+
+#[inline]
+fn make() -> &'static str {
+    &MAKE
 }
 
 fn check_make(make: &str) -> bool {
@@ -73,6 +79,7 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .expect("unable to change directory");
     Command::new("./configure")
         .args(["--prefix", cfg.install_prefix])
+        .args(["--host", &cfg.target])
         .arg("--disable-nls")
         .arg("--without-python")
         .arg("--without-tcl")
@@ -100,6 +107,7 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
         .expect("unable to change directory");
     Command::new("./configure")
         .args(["--prefix", cfg.install_prefix])
+        .args(["--host", &cfg.target])
         .arg("--disable-nls")
         .arg("--disable-rpath")
         .status().expect("error running configure");
@@ -129,6 +137,7 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .expect("unable to change directory");
     Command::new("./configure")
         .args(["--prefix", cfg.install_prefix])
+        .args(["--host", &cfg.target])
         .status().expect("error running configure");
 
     Command::new(make())
@@ -145,9 +154,44 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .expect("error running pkg-config")
 }
 
-#[inline]
-fn make() -> &'static str {
-    &MAKE
+fn compiler() -> Option<PathBuf> {
+    let mut cc_cfg = cc::Build::new();
+    cc_cfg.cargo_metadata(false)
+          .warnings(false);
+
+    let _compiler = cc_cfg.get_compiler();
+    let compiler = _compiler.path();
+    let mut cmd = Command::new("sh");
+    cmd.arg("-c")
+        .arg(&format!("command -v \"{}\"", compiler.display()));
+
+    match cmd.status() {
+        Ok(status) => {
+            if status.success() {
+                Some(compiler.to_owned())
+            } else {
+                None
+            }
+        },
+        Err(_) => None
+    }
+}
+
+fn set_cc() {
+    if let Some(compiler) = compiler() {
+        if let Err(_) = env::var("CC") {
+            env::set_var("CC", compiler.as_os_str());
+        }
+    }
+}
+
+fn target() -> String {
+    let target = env::var("TARGET").unwrap();
+
+    match target.as_str() {
+        "riscv64gc-unknown-linux-gnu" => String::from("riscv64-unknown-linux-gnu"),
+        _ => target
+    }
 }
 
 fn export_env_libs(libs: &[Box<Library>]) {
@@ -206,6 +250,7 @@ fn build(package: &str, version: &str, out_dir: &str,
     let install_prefix = &format!("{}/install/{}", out_dir, version_name);
 
     let build_cfg = BuildConfig {
+        target: target(),
         build_prefix,
         archive_name: &format!("{}/vendor/{}", crate_path, version_name),
         src_dir: &format!("{}/{}", build_prefix, version_name),
@@ -236,6 +281,7 @@ fn build_libs() -> Library {
     let out_dir = env::var("OUT_DIR").unwrap();
     let mut libraries: Vec<Box<Library>> = Vec::new();
 
+    env::set_var("PKG_CONFIG_SYSROOT_DIR", &out_dir);
     let library = Box::new(build("popt", POPT_VERSION, &out_dir, None));
     libraries.push(library);
 
@@ -248,6 +294,11 @@ fn build_libs() -> Library {
 fn build_c(lib: &Library) {
     let mut build = cc::Build::new();
     build.file("src/colorset_custom.c");
+
+    if let Ok(cc) = env::var("CC") {
+        build.compiler(cc);
+    }
+
     for path in lib.include_paths.iter() {
         build.include(path);
     }
@@ -262,6 +313,7 @@ fn main() {
         .atleast_version(NEWT_VERSION)
         .probe("libnewt");
 
+    set_cc();
     let lib: Library = if statik || result.is_err() {
         find_gnu_make();
         build_libs()
