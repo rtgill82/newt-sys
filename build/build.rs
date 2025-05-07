@@ -192,7 +192,8 @@ fn compiler() -> Option<PathBuf> {
     let _compiler = cc_cfg.get_compiler();
     let compiler = _compiler.path();
     let mut cmd = Command::new("sh");
-    cmd.arg("-c")
+    cmd.stdout(Stdio::null())
+        .arg("-c")
         .arg(&format!("command -v \"{}\"", compiler.display()));
 
     match cmd.status() {
