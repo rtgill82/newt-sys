@@ -334,4 +334,8 @@ fn main() {
         result.unwrap()
     };
     build_c(&lib);
+
+    if statik {
+        println!("cargo:rustc-link-lib=static=newt");
+    }
 }
