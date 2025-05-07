@@ -25,9 +25,13 @@ use lazy_static::lazy_static;
 use pkg_config::Library;
 use regex::Regex;
 
-use std::{env, fs};
+use std::ffi::OsStr;
 use std::path::{Path,PathBuf};
 use std::process::{Command,Stdio};
+use std::{env, fs};
+
+mod build_config;
+use build_config::BuildConfig;
 
 const NEWT_VERSION:   &str = "0.52.25";
 const POPT_VERSION:   &str = "1.19";
@@ -36,16 +40,16 @@ const SLANG_VERSION:  &str = "2.3.3";
 const OLD_CFLAGS_ENV: &str = "_OLD_CFLAGS";
 
 lazy_static! {
+    static ref TOP: String = env::var("CARGO_MANIFEST_DIR").unwrap();
     static ref MAKE: &'static str = find_gnu_make();
+
+    static ref CONFIG_GUESS: String = format!("{}/gnuconfig/config.guess", crate_path());
+    static ref CONFIG_SUB: String = format!("{}/gnuconfig/config.sub", crate_path());
 }
 
-struct BuildConfig<'a> {
-    target: String,
-    build_prefix: &'a str,
-    archive_name: &'a str,
-    src_dir: &'a str,
-    install_prefix: &'a str,
-    pkg_config_path: &'a str
+#[inline]
+fn crate_path() -> &'static str {
+    &TOP
 }
 
 #[inline]
@@ -78,9 +82,19 @@ fn find_gnu_make() -> &'static str {
     panic!("GNU Make is required for building this package.");
 }
 
-fn append_pkg_config_path(path: &str) {
+fn update_gnuconfig_files(cfg: &BuildConfig) {
+    let autoconf_aux_path = cfg.autoconf_aux_path().unwrap().display();
+
+    let dest = format!("{}/config.guess", autoconf_aux_path);
+    fs::copy(&*CONFIG_GUESS, dest).unwrap();
+
+    let dest = format!("{}/config.sub", autoconf_aux_path);
+    fs::copy(&*CONFIG_SUB, dest).unwrap();
+}
+
+fn append_pkg_config_path(path: &Path) {
     if let Ok(pkg_config_path) = env::var("PKG_CONFIG_PATH") {
-        let new_path = format!("{}:{}", pkg_config_path, path);
+        let new_path = format!("{}:{}", pkg_config_path, path.display());
         env::set_var("PKG_CONFIG_PATH", new_path);
     } else {
         env::set_var("PKG_CONFIG_PATH", path);
@@ -88,17 +102,15 @@ fn append_pkg_config_path(path: &str) {
 }
 
 fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
-    let archive = &format!("{}.tar.gz", cfg.archive_name);
-
-    Command::new("tar").args(["xzf", archive])
-        .args(["-C", cfg.build_prefix])
+    Command::new("tar").args([OsStr::new("xzf"), cfg.archive_path().as_ref()])
+        .args([OsStr::new("-C"), cfg.build_prefix().as_ref()])
         .status().expect("error running tar");
 
-    env::set_current_dir(Path::new(cfg.src_dir))
+    env::set_current_dir(cfg.src_path())
         .expect("unable to change directory");
     Command::new("./configure")
-        .args(["--prefix", cfg.install_prefix])
-        .args(["--host", &cfg.target])
+        .args([OsStr::new("--prefix"), cfg.install_prefix().as_ref()])
+        .args(["--host", cfg.target()])
         .arg("--disable-nls")
         .arg("--without-python")
         .arg("--without-tcl")
@@ -108,7 +120,7 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("install")
         .status().expect("error running make");
 
-    append_pkg_config_path(cfg.pkg_config_path);
+    append_pkg_config_path(cfg.pkg_config_path());
     pkg_config::Config::new()
         .atleast_version(version)
         .statik(true)
@@ -117,16 +129,16 @@ fn build_newt(version: &str, cfg: &BuildConfig) -> Library {
 }
 
 fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
-    let archive = &format!("{}.tar.gz", cfg.archive_name);
-    Command::new("tar").args(["xzf", archive])
-        .args(["-C", cfg.build_prefix])
+    Command::new("tar").args([OsStr::new("xzf"), cfg.archive_path().as_ref()])
+        .args([OsStr::new("-C"), cfg.build_prefix().as_ref()])
         .status().expect("error running tar");
 
-    env::set_current_dir(Path::new(cfg.src_dir))
+    update_gnuconfig_files(cfg);
+    env::set_current_dir(cfg.src_path())
         .expect("unable to change directory");
     Command::new("./configure")
-        .args(["--prefix", cfg.install_prefix])
-        .args(["--host", &cfg.target])
+        .args([OsStr::new("--prefix"), cfg.install_prefix().as_ref()])
+        .args(["--host", cfg.target()])
         .arg("--disable-nls")
         .arg("--disable-rpath")
         .status().expect("error running configure");
@@ -135,7 +147,7 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
         .arg("install")
         .status().expect("error running make");
 
-    append_pkg_config_path(cfg.pkg_config_path);
+    append_pkg_config_path(cfg.pkg_config_path());
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")
@@ -145,18 +157,17 @@ fn build_popt(version: &str, cfg: &BuildConfig) -> Library {
 }
 
 fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
-    let archive = &format!("{}.tar.bz2", cfg.archive_name);
-
     cflags_set_fpic();
-    Command::new("tar").args(["xjf", archive])
-        .args(["-C", cfg.build_prefix])
+    Command::new("tar").args([OsStr::new("xjf"), cfg.archive_path().as_ref()])
+        .args([OsStr::new("-C"), cfg.build_prefix().as_ref()])
         .status().expect("error running tar");
 
-    env::set_current_dir(Path::new(cfg.src_dir))
+    update_gnuconfig_files(cfg);
+    env::set_current_dir(cfg.src_path())
         .expect("unable to change directory");
     Command::new("./configure")
-        .args(["--prefix", cfg.install_prefix])
-        .args(["--host", &cfg.target])
+        .args([OsStr::new("--prefix"), cfg.install_prefix().as_ref()])
+        .args(["--host", cfg.target()])
         .status().expect("error running configure");
 
     Command::new(make())
@@ -164,7 +175,7 @@ fn build_slang(version: &str, cfg: &BuildConfig) -> Library {
         .status().expect("error running make");
 
     cflags_restore();
-    append_pkg_config_path(cfg.pkg_config_path);
+    append_pkg_config_path(cfg.pkg_config_path());
     pkg_config::Config::new()
         .atleast_version(version)
         .arg("--cflags")
@@ -201,15 +212,6 @@ fn set_cc() {
         if let Err(_) = env::var("CC") {
             env::set_var("CC", compiler.as_os_str());
         }
-    }
-}
-
-fn target() -> String {
-    let target = env::var("TARGET").unwrap();
-
-    match target.as_str() {
-        "riscv64gc-unknown-linux-gnu" => String::from("riscv64-unknown-linux-gnu"),
-        _ => target
     }
 }
 
@@ -261,28 +263,20 @@ fn cflags_restore() {
     }
 }
 
-fn build(package: &str, version: &str, out_dir: &str,
-         libs: Option<&[Box<Library>]>) -> Library {
-    let crate_path = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let version_name = &format!("{}-{}", package, version);
-    let build_prefix = &format!("{}/build", out_dir);
-    let install_prefix = &format!("{}/install/{}", out_dir, version_name);
-
-    let build_cfg = BuildConfig {
-        target: target(),
-        build_prefix,
-        archive_name: &format!("{}/vendor/{}", crate_path, version_name),
-        src_dir: &format!("{}/{}", build_prefix, version_name),
-        install_prefix,
-        pkg_config_path: &format!("{}/lib/pkgconfig", install_prefix)
-    };
+fn build(package: &str, version: &str, libs: Option<&[Box<Library>]>) -> Library {
+    let mut build_cfg = BuildConfig::new(package, version);
+    match package {
+        "popt"  => build_cfg.set_autoconf_aux_path("build-aux"),
+        "slang" => build_cfg.set_autoconf_aux_path("autoconf"),
+        _       => { }
+    }
 
     if let Some(libs) = libs { export_env_libs(libs) }
     let old_dir = env::current_dir()
         .expect("unable to read current directory");
-    fs::create_dir_all(Path::new(build_prefix))
+    fs::create_dir_all(build_cfg.build_prefix())
         .expect("unable to create build directory");
-    env::set_current_dir(Path::new(build_prefix))
+    env::set_current_dir(build_cfg.build_prefix())
         .expect("unable to change directory");
     let library = match package {
         "newt" => build_newt(version, &build_cfg),
@@ -301,13 +295,13 @@ fn build_libs() -> Library {
     let mut libraries: Vec<Box<Library>> = Vec::new();
 
     env::set_var("PKG_CONFIG_SYSROOT_DIR", &out_dir);
-    let library = Box::new(build("popt", POPT_VERSION, &out_dir, None));
+    let library = Box::new(build("popt", POPT_VERSION, None));
     libraries.push(library);
 
-    let library = Box::new(build("slang", SLANG_VERSION, &out_dir, None));
+    let library = Box::new(build("slang", SLANG_VERSION, None));
     libraries.push(library);
 
-    build("newt", NEWT_VERSION, &out_dir, Some(&libraries))
+    build("newt", NEWT_VERSION, Some(&libraries))
 }
 
 fn build_c(lib: &Library) {

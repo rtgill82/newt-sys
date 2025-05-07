@@ -1,3 +1,6 @@
+[submodule "gnuconfig"]
+	path = gnuconfig
+	url = https://git.savannah.gnu.org/git/config.git
 [submodule "vendor"]
 	path = vendor
 	url = https://github.com/rtgill82/vendor-newt-sys.git
